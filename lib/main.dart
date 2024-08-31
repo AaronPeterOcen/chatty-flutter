@@ -1,4 +1,7 @@
 import 'package:chatfl/screens/authentication.dart';
+import 'package:chatfl/screens/chat.dart';
+import 'package:chatfl/screens/splash.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 // adding the firebase packages
@@ -21,11 +24,24 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'FlutterChat',
-        theme: ThemeData().copyWith(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 7, 124, 17)),
-        ),
-        home: const AuthenticationScreen());
+      title: 'FlutterChat',
+      theme: ThemeData().copyWith(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 7, 124, 17)),
+      ),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SplashScreen();
+          }
+
+          if (snapshot.hasData) {
+            return const ChatScreen();
+          }
+          return const AuthenticationScreen();
+        },
+      ),
+    );
   }
 }
