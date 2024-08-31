@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:chatfl/user_image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -81,6 +82,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (!_isLogin) UserImagePicker(),
                         TextFormField(
                           decoration:
                               const InputDecoration(labelText: 'Email..'),
