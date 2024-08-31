@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'chatty-01-404a8.appspot.com',
     iosBundleId: 'com.example.chatfl',
   );
+
 }

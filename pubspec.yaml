@@ -37,6 +37,7 @@ dependencies:
   flutterfire_cli: ^1.0.0
   firebase_core: ^3.3.0
   firebase_auth: ^5.1.4
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:

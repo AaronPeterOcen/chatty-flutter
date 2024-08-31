@@ -1,6 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 // Will manage user authentication
+
+final _firebase = FirebaseAuth.instance;
+
 class AuthenticationScreen extends StatefulWidget {
   const AuthenticationScreen({super.key});
 
@@ -15,15 +21,35 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   var _enteredEmail = '';
   var _enteredPassword = '';
 
-  void _submit() {
+  void _submit() async {
     final isValid = _form.currentState!.validate();
 
-    if (isValid) {
-      _form.currentState!.save();
+    if (!isValid) {
+      return;
     }
+    _form.currentState!.save();
 
-    print(_enteredEmail);
-    print(_enteredPassword);
+    if (_isLogin) {
+      final userCredentials = await _firebase.signInWithEmailAndPassword(
+          email: _enteredEmail, password: _enteredPassword);
+      print(userCredentials);
+    } else {
+      try {
+        final userCredentials = await _firebase.createUserWithEmailAndPassword(
+            email: _enteredEmail, password: _enteredPassword);
+        // print(userCredentials);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'email already in use') {
+          //
+        }
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message ?? 'Could not authenticate'),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -115,7 +141,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                               backgroundColor: Theme.of(context)
                                   .colorScheme
                                   .primaryContainer),
-                          child: Text(_isLogin ? 'SignUp' : 'Login'),
+                          child: Text(_isLogin ? 'Login' : 'SignUp'),
                         ),
                         TextButton(
                             onPressed: () {
