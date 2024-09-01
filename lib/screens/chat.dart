@@ -11,6 +11,7 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('chatty'),
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           actions: [
             IconButton(
                 onPressed: () {

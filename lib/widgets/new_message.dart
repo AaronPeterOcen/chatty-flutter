@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 // This widget allows users to compose and send a new message.
@@ -13,7 +15,7 @@ class NewMessage extends StatefulWidget {
 // Manages the text field input and submission behavior.
 class _NewMessageState extends State<NewMessage> {
   // Controller to manage and listen to changes in the TextField input.
-  var _messageController = TextEditingController();
+  final _messageController = TextEditingController();
 
   @override
   void dispose() {
@@ -24,7 +26,7 @@ class _NewMessageState extends State<NewMessage> {
   }
 
   // Function to handle the submission of the message.
-  void submitMessage() {
+  void submitMessage() async {
     // Retrieve the text entered by the user.
     final enteredMessage = _messageController.text;
 
@@ -32,6 +34,31 @@ class _NewMessageState extends State<NewMessage> {
     if (enteredMessage.trim().isEmpty) {
       return;
     }
+    FocusScope.of(context).unfocus();
+
+    // Fetch the currently authenticated user from Firebase Authentication.
+// The '!' operator asserts that the current user is not null.
+    final user = FirebaseAuth.instance.currentUser!;
+
+// Fetch the user's document from the 'users' collection in Firestore using the user's unique ID (uid).
+// This is done to retrieve additional user data like username and profile image.
+    final userData = await FirebaseFirestore.instance
+        .collection(
+            'users') // Reference to the 'users' collection in Firestore.
+        .doc(user.uid) // Reference to the document with the user's UID.
+        .get(); // Get the document snapshot asynchronously.
+
+// Add a new document to the 'chat' collection in Firestore with the message and user details.
+    FirebaseFirestore.instance.collection('chat').add({
+      'text': enteredMessage, // The message text entered by the user.
+      'createdAt': Timestamp
+          .now(), // The current timestamp to record when the message was created.
+      'userId': user.uid, // The UID of the user sending the message.
+      'username': userData
+          .data()!['user'], // The username of the user, fetched from Firestore.
+      'userImage': userData.data()![
+          'image'], // The user's profile image URL, fetched from Firestore.
+    });
 
     // Clear the TextField after the message is submitted.
     _messageController.clear();
