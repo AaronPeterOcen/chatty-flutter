@@ -27,6 +27,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   var _enteredPassword = '';
   File? selectedImage;
   var _isAuthenticating = false;
+  var _enteredUsername = '';
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
@@ -60,7 +61,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             .collection('users')
             .doc(userCredentials.user!.uid)
             .set({
-          'user': "null",
+          'user': _enteredUsername,
           'email': _enteredEmail,
           'image': imageUrl,
         });
@@ -135,6 +136,23 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                             // _enteredPassword = newValue;
                           },
                         ),
+                        if (!_isLogin)
+                          TextFormField(
+                            decoration:
+                                const InputDecoration(labelText: 'Username'),
+                            enableSuggestions: false,
+                            onSaved: (newValue) {
+                              _enteredUsername = newValue!;
+                            },
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().length < 5 ||
+                                  value.isEmpty) {
+                                return 'Enter at least five or more characters';
+                              }
+                              return null;
+                            },
+                          ),
                         TextFormField(
                           decoration:
                               const InputDecoration(labelText: 'Password..'),
