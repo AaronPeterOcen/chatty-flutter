@@ -5,7 +5,12 @@ import 'package:image_picker/image_picker.dart';
 
 // FlutterError
 class UserImagePicker extends StatefulWidget {
-  const UserImagePicker({super.key});
+  const UserImagePicker({
+    super.key,
+    required this.onPickImage,
+  });
+
+  final void Function(File pickedImage) onPickImage;
 
   @override
   State<UserImagePicker> createState() => _UserImagePickerState();
@@ -16,7 +21,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
 
   void _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(
-        source: ImageSource.gallery, imageQuality: 50, maxWidth: 100);
+        source: ImageSource.gallery, imageQuality: 100, maxWidth: 100);
 
     if (pickedImage == null) {
       return;
@@ -24,6 +29,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
     setState(() {
       _pickedImageFile = File(pickedImage.path);
     });
+    widget.onPickImage(_pickedImageFile!);
   }
 
   @override
